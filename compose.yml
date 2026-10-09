@@ -3,27 +3,31 @@ services:
   api:
     build: .
     container_name: research-assistant-api
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - research-assistant-network
   
   postgres:
     image: postgres:18-alpine
     container_name: research-assistant-postgres
     environment:
-      - POSTGRES_DB=research-assistant_db
-      - POSTGRES_USER=research-assistant_user
-      - POSTGRES_PASSWORD=research-assistant_password
-      - POSTGRES_HOST_AUTH_METHOD=password
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${POSTGRES_DB:-research-assistant_db}
+      POSTGRES_USER: ${POSTGRES_USER:-research-assistant_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-research-assistant_password}
+      POSTGRES_HOST_AUTH_METHOD: password
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U research-assistant_user -d research-assistant_db"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10

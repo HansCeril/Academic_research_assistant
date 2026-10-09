@@ -12,8 +12,8 @@ start: ## Start all services
 stop: ## Stop all services
 	docker compose down
 
-restart: ## Restart all services
-	docker compose restart
+restart: ## Recreate services (reloads .env and compose.yml)
+	docker compose up --build -d --force-recreate
 
 status: ## Show service status
 	docker compose ps
