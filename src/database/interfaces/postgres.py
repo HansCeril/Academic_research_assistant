@@ -52,14 +52,16 @@ class PostgreSQLDatabase(BaseDatabase):
             logger.info("Database connection test successful")
 
             # Create tables if they don't exist (idempotent operation).
-            # Models must be imported before this point to be registered on Base.
             existing_tables = set(inspect(self.engine).get_table_names())
             Base.metadata.create_all(bind=self.engine)
             # New inspector: the first one caches its results
             updated_tables = set(inspect(self.engine).get_table_names())
 
             if new_tables := updated_tables - existing_tables:
-                logger.info("Created new tables: %s", ", ".join(sorted(new_tables)))
+                logger.info(
+                    "Created new tables: %s",
+                    ", ".join(sorted(new_tables)),
+                )
             else:
                 logger.info("All tables already exist - no new tables created")
 
@@ -85,7 +87,9 @@ class PostgreSQLDatabase(BaseDatabase):
     def get_session(self) -> Generator[Session]:
         """Get a database session, rolled back on error and always closed."""
         if not self.session_factory:
-            raise RuntimeError("Database not initialized. Call startup() first.")
+            raise RuntimeError(
+                "Database not initialized. Call startup() first."
+            )
 
         with self.session_factory() as session:
             try:
