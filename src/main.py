@@ -9,6 +9,8 @@ from src.database.interfaces.postgres import PostgreSQLDatabase
 from src.dependencies import get_settings
 from src.routers import ping
 from src.schemas.database import PostgreSQLSettings
+from src.schemas.opensearch import OpenSearchSettings
+from src.services.opensearch import OpenSearchClient
 
 settings = get_settings()
 
@@ -20,13 +22,15 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    """Open the database pool on startup and close it on shutdown."""
+    """Open the database pool and OpenSearch client on startup, close them on shutdown."""
     database = PostgreSQLDatabase(PostgreSQLSettings())
     database.startup()
     app.state.database = database
+    app.state.opensearch = OpenSearchClient(OpenSearchSettings())
     try:
         yield
     finally:
+        app.state.opensearch.close()
         database.teardown()
 
 
