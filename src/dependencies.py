@@ -1,3 +1,5 @@
+"""Dependency providers for FastAPI routes and application services."""
+
 from functools import lru_cache
 from typing import Annotated
 
@@ -5,7 +7,7 @@ from fastapi import Depends, Request
 
 from src.database.interfaces.postgres import PostgreSQLDatabase
 from src.services.config import Settings
-from src.services.opensearch import OpenSearchClient
+from src.services.opensearch.opensearch import OpenSearchClient
 
 
 @lru_cache

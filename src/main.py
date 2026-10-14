@@ -1,3 +1,5 @@
+"""Application entrypoint for the Academic Research Assistant service."""
+
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -10,7 +12,7 @@ from src.dependencies import get_settings
 from src.routers import ping
 from src.schemas.database import PostgreSQLSettings
 from src.schemas.opensearch import OpenSearchSettings
-from src.services.opensearch import OpenSearchClient
+from src.services.opensearch.opensearch import OpenSearchClient
 
 settings = get_settings()
 
@@ -22,7 +24,9 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    """Open the database pool and OpenSearch client on startup, close them on shutdown."""
+    """Open the database and OpenSearch clients on startup; close them on
+    shutdown.
+    """
     database = PostgreSQLDatabase(PostgreSQLSettings())
     database.startup()
     app.state.database = database
