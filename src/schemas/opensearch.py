@@ -1,6 +1,6 @@
 """OpenSearch configuration settings."""
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import SettingsConfigDict
 
 from src.services.config import BaseConfigSettings
@@ -23,4 +23,17 @@ class OpenSearchSettings(BaseConfigSettings):
         default=5.0,
         gt=0,
         description="Request timeout in seconds",
+    )
+    index_name: str = Field(
+        default="cv_chunks",
+        description="Index of the CV chunks (BM25 + kNN)",
+    )
+    username: str | None = Field(
+        default=None,
+        description="Basic auth user (security plugin); None when disabled",
+    )
+    password: SecretStr | None = Field(default=None, description="Basic auth password")
+    verify_certs: bool = Field(
+        default=True,
+        description="Verify the TLS certificate of an https:// host",
     )

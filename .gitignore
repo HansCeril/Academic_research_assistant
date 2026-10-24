@@ -178,5 +178,10 @@ data/
 test_output/
 test_data/
 
+# Terraform (the state holds secrets such as the RDS password)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
 
-
+cv_search_assistant
